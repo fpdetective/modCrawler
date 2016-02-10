@@ -1,0 +1,2 @@
+[pid 25354] read(11, "grep\0SharedObjects\0", 131072) = 19
+[pid 25350] open("/home/user/.macromedia/Flash_Player/#SharedObjects/RAFH1E3S/securehomes.esat.kuleuven.be/FlashCookie.sol", O_RDONLY) = 17
