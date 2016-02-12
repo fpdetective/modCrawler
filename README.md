@@ -1,5 +1,5 @@
 # modCrawler
-Crawler based on a modified browser to detect online tracking.
+Crawler based on a modified browser to detect online tracking. Used in the canvas fingerprinting and evercookie detection experiments in our CCS 2014 paper, [The Web Never Forgets](https://securehomes.esat.kuleuven.be/~gacar/persistent/the_web_never_forgets.pdf). Visit [The Web Never Forgets website](https://securehomes.esat.kuleuven.be/~gacar/persistent/) for more info.
 
 # Installation
 We strongly suggest you to use a virtual machine, container or similar isolation to install modCrawler.
