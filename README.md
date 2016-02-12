@@ -48,4 +48,28 @@ Once the crawl has finished, you can find the crawl data in the ```jobs/latest/`
 In addition, the crawl directory is gzipped and stored in the `jobs` directory.
 
 ### Building your own browser
-The `setup.sh` script will download a modified Firefox which logs canvas fingerprinting related function calls. Alternatively, you can [build your own Firefox](https://developer.mozilla.org/en-US/docs/Simple_Firefox_build) using the provided [browser patch](https://github.com/fpdetective/modCrawler/tree/master/browser_patch). You need to place your freshly built browser to bins/ff-mod directory to make sure it is used by the crawler.
+The `setup.sh` script will download a modified Firefox which logs canvas fingerprinting related function calls. Alternatively, you can [build your own Firefox](https://developer.mozilla.org/en-US/docs/Simple_Firefox_build) using the provided [browser patch](https://github.com/fpdetective/modCrawler/tree/master/browser_patch). Make sure you use the right `.mozconfig` file for building (e.g., ```export MOZCONFIG=~/path/to/gecko-dev/.mozconfig-ffstd```)
+Assuming you checked out [Firefox repository](https://github.com/mozilla/gecko-dev) into ~/dev/gecko-dev/
+```
+cd ~/dev/gecko-dev/;
+git fetch
+git checkout GECKO4401_2016020518_RELBRANCH
+# make sure it builds without the modifications
+./mach build
+# now create a new branch
+git checkout -b canvas_GECKO4401_2016020518_RELBRANCH
+# test the patch 
+git apply --check /path/to/modCrawler/browser_patch/0001-Log-canvas-fingerprinting-related-function-calls.patch
+# apply the patch
+git apply ~/dev/modCrawler/browser_patch/0001-Log-canvas-fingerprinting-related-function-calls.patch
+# build the modified browser
+./mach build
+cd ~/dev/gecko-dev/firefox-static
+# package the browser
+make package;
+# copy it from dist dir to destination
+cp dist/*.bz2 /path/to/modCrawler/bins
+```
+
+
+You need to place your freshly built browser to bins/ff-mod directory to make sure it is used by the crawler.
