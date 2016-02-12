@@ -9,7 +9,7 @@ git clone https://github.com/fpdetective/modCrawler
 cd modCrawler
 ./setup.sh
 ```
-### Running tests
+### Running the tests
 Please run the tests before running the crawler. For simplicity you can run `py.test` from within the `test` directory. py.test will discover and run all the test. Alternatively, you can run individual tests from the command line such as:
 ```python -m test.runenv_test```
 
@@ -46,4 +46,4 @@ Once the crawl has finished, you can find the crawl data in the ```jobs/latest/`
 In addition, the crawl directory is gzipped and stored in the `jobs` directory.
 
 ### Building your own browser
-The `setup.sh` script will download a modified Firefox which logs canvas fingerprinting related function calls. Alternatively, you may [build your own Firefox](https://developer.mozilla.org/en-US/docs/Simple_Firefox_build) using the provided [browser patch](https://github.com/fpdetective/modCrawler/tree/master/browser_patch). You need to place your fresh built browser to bins/ff-mod directory to make sure it's used by the crawler.
+The `setup.sh` script will download a modified Firefox which logs canvas fingerprinting related function calls. Alternatively, you can [build your own Firefox](https://developer.mozilla.org/en-US/docs/Simple_Firefox_build) using the provided [browser patch](https://github.com/fpdetective/modCrawler/tree/master/browser_patch). You need to place your freshly built browser to bins/ff-mod directory to make sure it is used by the crawler.
