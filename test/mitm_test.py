@@ -15,8 +15,8 @@ class Test(sttest.STTest):
     def test_mitm_interception(self):
         found_http_req = False
         req_url = "http://example.com"
-        results = ffm.visit_page((1, req_url),
-                                 wait_on_site=0,
+        results = ffm.visit_page(req_url,
+                                 wait_on_site=1,
                                  out_dir=self.vi.out_dir)
         http_msgs = results["http_msgs"]
         self.assertTrue(len(http_msgs))
@@ -31,8 +31,8 @@ class Test(sttest.STTest):
     def test_ssl_mitm_interception(self):
         found_https_req = False
         req_url = "https://twitter.com/"
-        results = ffm.visit_page((1, req_url),
-                                 wait_on_site=3,
+        results = ffm.visit_page(req_url,
+                                 wait_on_site=1,
                                  out_dir=self.vi.out_dir)
         http_msgs = results["http_msgs"]
         self.assertTrue(len(http_msgs))

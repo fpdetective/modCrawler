@@ -71,8 +71,8 @@ class DBCmd:
 def create_db_from_schema(db_file, schema_file=cm.DB_SCHEMA):
     schema = fu.read_file(schema_file)
     with sq.connect(db_file, timeout=cm.DB_CONN_TIMOEUT) as conn:
-            cursor = conn.cursor()
-            cursor.executescript(schema)
+        cursor = conn.cursor()
+        cursor.executescript(schema)
 
 
 def insert_flash_cookies(cursor, visit_info, rows):

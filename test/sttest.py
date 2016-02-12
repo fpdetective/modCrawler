@@ -1,8 +1,8 @@
 import unittest
 import utils.gen_utils as ut
 import utils.file_utils as fu
+import utils.db_utils as dbu
 import os
-import shutil
 import crawler.common as cm
 
 
@@ -15,7 +15,6 @@ class STTest(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         for f in cls.files_to_remove:  # remove test files
-            # print f, 'to be removed by STTest tearDownClass'
             if os.path.lexists(f):
                 fu.rm(f)
 
@@ -30,8 +29,7 @@ class STTest(unittest.TestCase):
         self.vi.ff_log = os.path.join(cm.BASE_TMP_DIR, "ff_test.log")
         self.vi.log_options = [cm.LOG_TO_FILE, cm.LOG_TO_CONSOLE]
         self.vi.url = "http://xyz.org"
-        shutil.copy(os.path.join(cm.BASE_ETC_DIR, "base.db"),
-                    self.test_db)
+        dbu.create_db_from_schema(self.test_db)
         self.files_to_remove.extend([self.test_db, self.vi.sys_log,
                                      self.vi.ff_log])
 
@@ -39,7 +37,7 @@ class STTest(unittest.TestCase):
         fu.rm(self.test_db)
 
     def should_not_raise(self, msg, fn, *xargs, **kwargs):
-        """Check that function does not raises."""
+        """Fail if the function does not raise."""
         try:
             fn(*xargs, **kwargs)
         except:
@@ -48,7 +46,7 @@ class STTest(unittest.TestCase):
             pass
 
     def should_raise(self, msg, fn, *xargs, **kwargs):
-        """Ensure that function raises with given args."""
+        """Check if the function raises with given args."""
         try:
             fn(*xargs, **kwargs)
         except:

@@ -39,7 +39,7 @@ def create_job_folder(suffix):
 
 
 def run_cmd(url_tuple, out_dir, timeout=cm.HARD_TIME_OUT,
-            flash_support=cm.FLASH_ENABLE, cookie_pref=cm.COOKIE_ALLOW_ALL):
+            flash_support=cm.FLASH_ENABLE, cookie_support=cm.COOKIE_ALLOW_ALL):
     if isfile(cm.STOP_CRAWL_FILE):
         print "Stop crawl file exists, won't run"
         return
@@ -54,7 +54,7 @@ def run_cmd(url_tuple, out_dir, timeout=cm.HARD_TIME_OUT,
         " --rank %d  --out_dir %s --flash %d  --cookie %s 2>&1 >> %s" %\
         (cm.KILL_TIME_OUT, timeout, pipes.quote(url_tuple[1]),
          int(url_tuple[0]), pipes.quote(out_dir), int(flash_support),
-         int(cookie_pref), pipes.quote(debug_log))
+         int(cookie_support), pipes.quote(debug_log))
 
     print "Will run:", cmd
     # print "status, output:", ut.run_cmd(cmd)
@@ -132,18 +132,23 @@ def read_machine_id():
         return "Unk"
 
 
-def crawl(urls, max_parallel_procs=cm.NUM_PARALLEL_PROCS,
-          flash_support=cm.FLASH_ENABLE, cookie_pref=cm.COOKIE_ALLOW_ALL,
-          upload_data=1):
+# def crawl(urls, max_parallel_procs=cm.NUM_PARALLEL_PROCS,
+#           flash_support=cm.FLASH_ENABLE, cookie_pref=cm.COOKIE_ALLOW_ALL,
+#           upload_data=1):
+def crawl(crawl_info):
     # modified get function with specific browser
-    if isfile(urls):
-        url_tuples = wu.gen_url_list(stop, start, True, urls)
+    if isfile(crawl_info.urls):
+        url_tuples = wu.gen_url_list(crawl_info.max_rank,
+                                     crawl_info.min_rank, True,
+                                     crawl_info.urls)
     else:
-        url_tuples = [(0, urls), ]  # a single url has been passed
+        url_tuples = [(0, crawl_info.urls), ]  # a single url has been passed
 
     machine_id = read_machine_id()
-    suffix = "_%s_FL%s_CO%s_%s_%s" % (machine_id, flash_support,
-                                      cookie_pref, start, stop)
+    suffix = "_%s_FL%s_CO%s_%s_%s" % (machine_id, crawl_info.flash_support,
+                                      crawl_info.cookie_support,
+                                      crawl_info.min_rank,
+                                      crawl_info.max_rank)
     out_dir, crawl_name = create_job_folder(suffix)
     # copy_mitm_certs()
     db_file = join(out_dir, cm.DB_FILENAME)
@@ -151,15 +156,15 @@ def crawl(urls, max_parallel_procs=cm.NUM_PARALLEL_PROCS,
     report_file = join(out_dir, "%s.html" % crawl_name)
     print "Crawl name:", crawl_name
     dbu.create_db_from_schema(db_file)
-    # shutil.copy(join(cm.BASE_ETC_DIR, "base.db"), db_file)
-
-    custom_get = partial(run_cmd, out_dir=out_dir, flash_support=flash_support,
-                         cookie_pref=cookie_pref)
-    parallelize.run_in_parallel(url_tuples, custom_get, max_parallel_procs)
+    custom_get = partial(run_cmd, out_dir=out_dir,
+                         flash_support=crawl_info.flash_support,
+                         cookie_support=crawl_info.cookie_support)
+    parallelize.run_in_parallel(url_tuples, custom_get,
+                                crawl_info.max_parallel_procs)
     gr.gen_crawl_report(db_file, report_file)
     # clean_tmp_files(out_dir)
     zipped = pack_data(out_dir)
-    if upload_data:
+    if crawl_info.upload_data:
         ssh.scp_put_to_server(zipped)
         ssh.scp_put_to_server(report_file)
 
@@ -170,58 +175,61 @@ def reset_stop_crawl():
         unlink(cm.STOP_CRAWL_FILE)
 
 if __name__ == '__main__':
-    reset_stop_crawl()
-    start = 1
-    stop = 0
-    upload_data = 0
-    max_parallel_procs = cm.NUM_PARALLEL_PROCS
-    flash_support = cm.FLASH_ENABLE  # enable Flash
-    cookie_support = cm.COOKIE_ALLOW_ALL  # enable 1st and 3rd party cookies
+    crawl_info = cm.CrawlInfo()
+#     crawl_info.
+#     min_rank = 1
+#     max_rank = 0
+#     upload_data = 0
+#     max_parallel_procs = cm.NUM_PARALLEL_PROCS
+#     flash_support = cm.FLASH_ENABLE  # enable Flash
+#     cookie_support = cm.COOKIE_ALLOW_ALL  # enable 1st and 3rd party cookies
+#     urls = ''
     environ["DISPLAY"] = ":0.0"
-    urls = ''
     args = sys.argv[1:]
+    # Remove residual crawl reset files
+    reset_stop_crawl()
 
     if not args:
-        print """usage: --urls urls --stop stop_pos [--start start_pos]
+        print """usage: --urls urls --max_rank max_rank [--min_rank min_rank]
          --max_proc max_parallel_processes [--flash 0 | 1]
          [--cookie | 1 | 2 | 3]"""
         sys.exit(1)
 
     if args and args[0] == '--urls':
-        urls = args[1]
+        crawl_info.urls = args[1]
         del args[0:2]
 
-    if args and args[0] == '--stop':
-        stop = int(args[1])
+    if args and args[0] == '--max_rank':
+        crawl_info.max_rank = int(args[1])
         del args[0:2]
 
-    if args and args[0] == '--start':
-        start = int(args[1])
+    if args and args[0] == '--min_rank':
+        crawl_info.min_rank = int(args[1])
         del args[0:2]
 
     if args and args[0] == '--max_proc':
-        max_parallel_procs = int(args[1])
+        crawl_info.max_parallel_procs = int(args[1])
         del args[0:2]
 
     if args and args[0] == '--flash':
-        flash_support = int(args[1])
+        crawl_info.flash_support = int(args[1])
         del args[0:2]
 
     if args and args[0] == '--cookie':
-        cookie_support = int(args[1])
+        crawl_info.cookie_support = int(args[1])
         del args[0:2]
 
     # add server and ssh key info in common.py if you want to upload crawl data
     if args and args[0] == '--upload':
-        upload_data = int(args[1])
+        crawl_info.upload_data = bool(int(args[1]))
         del args[0:2]
+    # TODO: process all urls if no max_rank is provided
+    if not crawl_info.max_rank:
+        print 'Cannot get the argument for maxrank %s' % (crawl_info.max_rank)
+        sys.exit(1)
 
     if args:
         print 'Some arguments not processed, check your command: %s' % (args)
         sys.exit(1)
 
-    if not stop:
-        print 'Cannot get the arguments for stoplimit %s' % (stop)
-        sys.exit(1)
-
-    crawl(urls, max_parallel_procs, flash_support, cookie_support, upload_data)
+    crawl(crawl_info)

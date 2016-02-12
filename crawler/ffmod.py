@@ -33,10 +33,10 @@ def open_log_file(out_dir, url):
 
 
 def set_ff_prefs(ffp, proxy_port=None, flash_support=cm.FLASH_ENABLE,
-                 cookie_pref=cm.COOKIE_ALLOW_ALL):
+                 cookie_support=cm.COOKIE_ALLOW_ALL):
     """Set default crawl preferences for FF profile."""
     set_pref = ffp.set_preference
-    set_pref('network.cookie.cookieBehavior', cookie_pref)
+    set_pref('network.cookie.cookieBehavior', cookie_support)
     set_pref('datareporting.healthreport.uploadEnabled', False)
     set_pref('toolkit.telemetry.enabled', False)
     set_pref('extensions.checkCompatibility.nightly', False)
@@ -103,13 +103,13 @@ def log_syscalls(proc, log_file):
 
 
 def get_browser(ff_log_file, proxy_port=None, flash_support=cm.FLASH_ENABLE,
-                cookie_pref=cm.COOKIE_ALLOW_ALL):
+                cookie_support=cm.COOKIE_ALLOW_ALL):
     ff_log_file_handle = open(ff_log_file, "a+")
     ff_bin = FirefoxBinary(firefox_path=cm.FF_MOD_BIN,
                            log_file=ff_log_file_handle)
 
     ffp = webdriver.FirefoxProfile(None)
-    set_ff_prefs(ffp, proxy_port, flash_support, cookie_pref)
+    set_ff_prefs(ffp, proxy_port, flash_support, cookie_support)
     tries = 0
     for tries in xrange(MAX_GET_DRIVER_TRIES):
         try:
@@ -135,14 +135,19 @@ def get_browser(ff_log_file, proxy_port=None, flash_support=cm.FLASH_ENABLE,
 def visit_page(url_tuple, timeout=cm.HARD_TIME_OUT,
                wait_on_site=cm.WAIT_ON_SITE, pre_crawl_sleep=False,
                out_dir=cm.BASE_TMP_DIR, flash_support=cm.FLASH_ENABLE,
-               cookie_pref=cm.COOKIE_ALLOW_ALL):
+               cookie_support=cm.COOKIE_ALLOW_ALL):
     driver = None
     visit_info = cm.VisitInfo()
-    visit_info.rank, visit_info.url = url_tuple
+    try:
+        visit_info.rank, visit_info.url = url_tuple
+    except:
+        # When rank of the page is not provided, we'll use rank=0
+        visit_info.rank, visit_info.url = 0, url_tuple
+
     visit_info.sys_log = join(out_dir, "syscall-%s-%s.log" %
                               (visit_info.rank, ut.rand_str()))
     visit_info.http_log = join(out_dir, "http-%s-%s.log" %
-                                   (visit_info.rank, ut.rand_str()))
+                               (visit_info.rank, ut.rand_str()))
     visit_info.http_dump = join(out_dir, "mitm-%s-%s.dmp" %
                                 (visit_info.rank, ut.rand_str()))
     visit_info.start_time = strftime("%Y%m%d-%H%M%S")
@@ -168,7 +173,7 @@ def visit_page(url_tuple, timeout=cm.HARD_TIME_OUT,
         visit_info.vdisplay = start_xvfb()
         port, visit_info.mitm_proc = start_mitm_capture(visit_info.http_dump)
         driver, visit_info.profile_dir, visit_info.sel_proc =\
-            get_browser(visit_info.ff_log, port, flash_support, cookie_pref)
+            get_browser(visit_info.ff_log, port, flash_support, cookie_support)
         if flash_support:
             visit_info.strace_proc = log_syscalls(visit_info.sel_proc,
                                                   visit_info.sys_log)
@@ -177,7 +182,6 @@ def visit_page(url_tuple, timeout=cm.HARD_TIME_OUT,
         driver_get(driver, visit_info, cm.SOFT_TIMEOUT)  # real visit
         #############################################################
         time.sleep(wait_on_site)
-        cm.print_debug(visit_info, "Finalizing visit %s" % visit_info.url)
         close_driver(driver, timeout=10)
         stop_strace(visit_info.strace_proc)
         result_dict = process_crawler_output(visit_info.ff_log, visit_info,

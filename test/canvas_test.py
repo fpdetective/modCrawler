@@ -59,7 +59,7 @@ class CanvasTest(sttest.STTest):
     def test_fill_text_calls(self):
         """ffmod should log the text that is written to the canvas."""
         ft_url = CANVAS_BASE_TEST_URL + "filltext.html"
-        results = ffm.visit_page((0, ft_url))
+        results = ffm.visit_page(ft_url, wait_on_site=1)
         calls = results["calls"]
         self.assertEqual(len(calls), 1, "Unexpected no of calls in logs: %d"
                          % len(calls))
@@ -77,21 +77,21 @@ class CanvasTest(sttest.STTest):
 
     def test_fill_text_to_dataurl_detection(self):
         ft_url = CANVAS_BASE_TEST_URL + "filltext_todataurl.html"
-        results = ffm.visit_page((0, ft_url), wait_on_site=1)
+        results = ffm.visit_page(ft_url, wait_on_site=1)
         calls = results["calls"]
         if not ex.check_canvas_rw_access(calls):
             self.fail("Cannot find read/write access logs to canvas")
 
     def test_stroke_text_to_dataurl_detection(self):
         ft_url = CANVAS_BASE_TEST_URL + "stroketext_todataurl.html"
-        results = ffm.visit_page((0, ft_url), wait_on_site=1)
+        results = ffm.visit_page(ft_url, wait_on_site=1)
         calls = results["calls"]
         if not ex.check_canvas_rw_access(calls):
             self.fail("Cannot find read/write access logs to canvas")
 
     def test_check_canvas_rw_access(self):
         ft_url = CANVAS_BASE_TEST_URL + "filltext.html"
-        results = ffm.visit_page((0, ft_url), wait_on_site=1)
+        results = ffm.visit_page(ft_url, wait_on_site=1)
         calls = results["calls"]
         if ex.check_canvas_rw_access(calls):
             self.fail("Should not find read/write access logs to canvas")
@@ -99,7 +99,7 @@ class CanvasTest(sttest.STTest):
     # ffmod should log extracted img data
     def test_to_data_url_br_test(self):
         ft_url = CANVAS_BASE_TEST_URL + "todataurl.html"
-        results = ffm.visit_page((0, ft_url))
+        results = ffm.visit_page(ft_url, wait_on_site=1)
         calls = results["calls"]
         self.assertEqual(len(calls), 2, "Unexpected no of calls in logs: %d"
                          % len(calls))

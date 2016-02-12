@@ -84,9 +84,6 @@ def process_crawler_output(ff_log_file, visit_info, flash=1):
     # wait until tmp files are merged to db, otherwise we won't
     # find the recently added items in db
 
-    # results_index = join(out_dir, "index.html")
-    # canvas_results = join(out_dir, "canvas.html")
-    cm.print_debug(visit_info, "process_crawler_output %s" % visit_info.url)
     db_jobs = {}
     flash_cookies = []
     sleep_until_sqlite_checkpoint(visit_info.profile_dir)

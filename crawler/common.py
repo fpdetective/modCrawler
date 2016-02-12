@@ -15,6 +15,26 @@ else:
 LOG_TO_CONSOLE = 1
 LOG_TO_FILE = 2
 
+NUM_PARALLEL_PROCS = 5  # use --max_proc cmd line argument to overwrite
+
+FLASH_ENABLE = 1
+FLASH_DISABLE = 0
+
+COOKIE_ALLOW_ALL = 0
+COOKIE_ALLOW_1ST_PARTY = 1
+COOKIE_ALLOW_NONE = 2
+COOKIE_ALLOW_3RD_PARTY_FROM_VISITED = 3
+
+
+class CrawlInfo(object):
+    min_rank = 1
+    max_rank = 0
+    upload_data = False
+    max_parallel_procs = NUM_PARALLEL_PROCS
+    flash_support = FLASH_ENABLE  # enable Flash
+    cookie_support = COOKIE_ALLOW_ALL  # enable 1st and 3rd party cookies
+    urls = ''
+
 
 class VisitInfo(object):
     url = ""
@@ -62,7 +82,6 @@ class DBException(Exception):
     pass
 
 
-NUM_PARALLEL_PROCS = 5  # use --max_proc cmd line argument to overwrite
 DB_FILENAME = "crawl.sqlite"
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
@@ -131,13 +150,6 @@ ACCESS_MODE_READ_ONLY = 1
 LOG_ERROR = 1
 LOG_DEBUG = 2
 
-FLASH_ENABLE = 1
-FLASH_DISABLE = 0
-
-COOKIE_ALLOW_ALL = 0
-COOKIE_ALLOW_1ST_PARTY = 1
-COOKIE_ALLOW_NONE = 2
-COOKIE_ALLOW_3RD_PARTY_FROM_VISITED = 3
 
 
 def print_debug(visit_info, log_line, log_fname=None):

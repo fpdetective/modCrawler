@@ -54,7 +54,7 @@ class Test(sttest.STTest):
         qry_str = '?lso_test_key=%s&lso_test_value=%s' % ("test_key",
                                                           lso_value)
         test_url = cm.BASE_TEST_URL + '/evercookie/lso/setlso.html' + qry_str
-        results = ffm.visit_page((0, test_url), wait_on_site=3)
+        results = ffm.visit_page(test_url, wait_on_site=3)
         lso_items = results["flash_cookies"]
         self.failUnless(len(lso_items))
 
@@ -72,7 +72,7 @@ class Test(sttest.STTest):
         qry_str = '?lso_test_key=%s&lso_test_value=%s' % ("test_key",
                                                           lso_value)
         test_url = cm.BASE_TEST_URL + '/evercookie/lso/setlso.html' + qry_str
-        results = ffm.visit_page((0, test_url), wait_on_site=3,
+        results = ffm.visit_page(test_url, wait_on_site=3,
                                  flash_support=cm.FLASH_DISABLE)
         lso_items = results["flash_cookies"]
         self.assertEqual(len(lso_items), 0)

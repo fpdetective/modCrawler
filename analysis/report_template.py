@@ -91,6 +91,7 @@ img.no-border{
     <ul>
         <li>Date $start - $end</li>
         <li>Visits: $completed_visits_cnt (of $visits_cnt) completed successfully</li>
+        <li>Canvas fingerprinting: $total_canvas_fp_count</li>
         <li>Cookies: $cookies</li>
         <li>localStorage: $localstorage</li>
         <li>Flash cookies(LSO): $flash_cookie_count</li>

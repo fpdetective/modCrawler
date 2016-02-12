@@ -13,7 +13,7 @@ if __name__ == '__main__':
     url = ""
     out_dir = "/dev/null"
     flash_support = cm.FLASH_ENABLE
-    cookie_pref = cm.COOKIE_ALLOW_ALL
+    cookie_support = cm.COOKIE_ALLOW_ALL
     if not args:
         print 'usage: --urls urls --stop stop_pos [--start start_pos]\
              --max_proc max_parallel_processes --flash flash_support'
@@ -36,9 +36,9 @@ if __name__ == '__main__':
         del args[0:2]
 
     if args and args[0] == '--cookie':
-        cookie_pref = int(args[1])
+        cookie_support = int(args[1])
         del args[0:2]
 
     ffm.visit_page((rank, url), timeout=None, pre_crawl_sleep=True,
                    out_dir=out_dir, flash_support=flash_support,
-                   cookie_pref=cookie_pref)
+                   cookie_support=cookie_support)

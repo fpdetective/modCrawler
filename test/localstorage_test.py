@@ -13,7 +13,7 @@ LS_TEST_URL = cm.BASE_TEST_URL + '/evercookie/localstorage.html'
 class Test(sttest.STTest):
 
     def test_ls_item_by_visit(self):
-        results = ffm.visit_page((0, LS_TEST_URL), wait_on_site=1)
+        results = ffm.visit_page(LS_TEST_URL, wait_on_site=1)
         ls_items = results["local_storage"]
         self.assertEqual(len(ls_items), 1,
                          'There should only be one item in localstorage %d' %
