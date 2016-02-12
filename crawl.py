@@ -225,7 +225,7 @@ if __name__ == '__main__':
         del args[0:2]
     # TODO: process all urls if no max_rank is provided
     if not crawl_info.max_rank:
-        print 'Cannot get the argument for maxrank %s' % (crawl_info.max_rank)
+        print 'Cannot get the argument for max_rank %s' % (crawl_info.max_rank)
         sys.exit(1)
 
     if args:

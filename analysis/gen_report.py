@@ -1,5 +1,5 @@
 import os
-import json
+# import json
 from tld import get_tld
 from Cheetah.Template import Template
 import crawler.common as cm
@@ -123,8 +123,8 @@ def gen_crawl_report(db_file, db_pass2=None, db_other_profs=None,
         all_canvasfp_ranks_urls[canvas_scr_domain] = script_ranks_and_urls
 
     # print all_canvasfp_ranks
-    fu.write_to_file(j(out_dir, "%s-canvas.json" % crawl_name),
-                     json.dumps(all_canvasfp_ranks))
+    # fu.write_to_file(j(out_dir, "%s-canvas.json" % crawl_name),
+    #                 json.dumps(all_canvasfp_ranks))
 
     total_canvas_fp_count = sum(canvas_domain_counts.itervalues())
 
