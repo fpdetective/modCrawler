@@ -32,6 +32,8 @@ Example:
 
 ### After the crawl
 
+<img src="https://raw.githubusercontent.com/fpdetective/modCrawler/master/etc/report.png" width="600px" alt="Report screenshot" />
+
 modCrawler will store the data about the crawls in the jobs directory. For convenience, it places a symlink called **latest** that points to the directory of the most recent crawl.
 
 During the crawl, you can watch the debug.log
